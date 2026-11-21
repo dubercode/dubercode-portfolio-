@@ -1,14 +1,15 @@
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Play, BookOpen } from "lucide-react";
-import { experience } from "./data/experience";
-import { skillGroups } from "./data/skills";
+import { useEffect, useState } from "react";
 import {
+  MessageCircle,
+} from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+  Play,
+  BookOpen,
   ArrowUpRight,
   GitBranch,
   UserRound,
-  Mail,
   Menu,
   X,
   Terminal,
@@ -19,9 +20,18 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+import { experience } from "./data/experience";
+import { skillGroups } from "./data/skills";
+import { translations } from "./i18n/translations";
+import type { Language } from "./i18n/translations";
+
+/* -------------------------------------------------------------------------- */
+/* SOCIAL LINKS                                                                */
+/* -------------------------------------------------------------------------- */
+
 const socialLinks = [
   {
-    label: "YouTube Channel",
+    label: "YouTube",
     href: "https://www.youtube.com/@dubercoder",
     icon: Play,
   },
@@ -32,12 +42,18 @@ const socialLinks = [
   },
 ];
 
+/* -------------------------------------------------------------------------- */
+/* PROJECTS                                                                    */
+/* -------------------------------------------------------------------------- */
+
 const projects = [
   {
     name: "Cloud Governance AI Agent",
     category: "AI & Cloud",
-    description:
-      "Intelligent cloud governance agent for infrastructure inventory, cost analysis, security findings and actionable recommendations.",
+    description: {
+      en: "Intelligent cloud governance agent for infrastructure inventory, cost analysis, security findings and actionable recommendations.",
+      es: "Agente inteligente de gobierno cloud para inventario de infraestructura, análisis de costes, hallazgos de seguridad y recomendaciones accionables.",
+    },
     stack: ["Python", "Azure", "AI", "Terraform"],
     status: "IN DEVELOPMENT",
     number: "01",
@@ -45,8 +61,10 @@ const projects = [
   {
     name: "Kubernetes GitOps Platform",
     category: "Platform Engineering",
-    description:
-      "Container orchestration platform with declarative deployments, GitOps workflows and infrastructure automation.",
+    description: {
+      en: "Container orchestration platform with declarative deployments, GitOps workflows and infrastructure automation.",
+      es: "Plataforma de orquestación de contenedores con despliegues declarativos, flujos GitOps y automatización de infraestructura.",
+    },
     stack: ["Kubernetes", "Docker", "Flux CD", "Terraform"],
     status: "LAB",
     number: "02",
@@ -54,8 +72,10 @@ const projects = [
   {
     name: "Madi Mobile Platform",
     category: "Application Development",
-    description:
-      "Mobile application ecosystem with Flutter, REST API, PostgreSQL and cloud-native infrastructure.",
+    description: {
+      en: "Mobile application ecosystem with Flutter, REST API, PostgreSQL and cloud-native infrastructure.",
+      es: "Ecosistema de aplicaciones móviles con Flutter, API REST, PostgreSQL e infraestructura cloud-native.",
+    },
     stack: ["Flutter", "FastAPI", "PostgreSQL", "Azure"],
     status: "IN DEVELOPMENT",
     number: "03",
@@ -63,55 +83,107 @@ const projects = [
   {
     name: "DevSecOps Pipeline",
     category: "Security & Automation",
-    description:
-      "Secure CI/CD pipeline integrating automated code analysis, dependency scanning and container security.",
+    description: {
+      en: "Secure CI/CD pipeline integrating automated code analysis, dependency scanning and container security.",
+      es: "Pipeline CI/CD seguro que integra análisis automatizado de código, análisis de dependencias y seguridad de contenedores.",
+    },
     stack: ["GitHub Actions", "SAST", "Trivy", "Docker"],
     status: "LAB",
     number: "04",
   },
 ];
 
-const technologies = [
+const projectFilters = [
+  { value: "All", en: "All", es: "Todos" },
+  { value: "AI & Cloud", en: "AI & Cloud", es: "IA y Cloud" },
   {
-    category: "CLOUD",
-    items: ["Azure", "AWS", "GCP", "Cloud Architecture"],
-    icon: Cloud,
+    value: "Platform Engineering",
+    en: "Platform Engineering",
+    es: "Ingeniería de Plataformas",
   },
   {
-    category: "INFRASTRUCTURE",
-    items: ["Terraform", "Bicep", "Docker", "Kubernetes"],
-    icon: Workflow,
+    value: "Application Development",
+    en: "Application Development",
+    es: "Desarrollo de Aplicaciones",
   },
   {
-    category: "DEVOPS",
-    items: ["Azure DevOps", "GitHub Actions", "GitOps", "CI/CD"],
-    icon: Code2,
-  },
-  {
-    category: "SECURITY",
-    items: ["DevSecOps", "SonarQube", "Trivy", "RBAC"],
-    icon: ShieldCheck,
+    value: "Security & Automation",
+    en: "Security & Automation",
+    es: "Seguridad y Automatización",
   },
 ];
 
-const commands: Record<string, string> = {
-  help: "Available commands: about, skills, projects, contact, clear",
-  about:
-    "Cloud & DevOps Engineer focused on automation, cloud infrastructure and scalable platforms.",
-  skills:
-    "Azure | AWS | GCP | Terraform | Kubernetes | Docker | CI/CD | GitOps | Python",
-  projects:
-    "Available projects: Cloud Governance AI Agent, GitOps Platform, Madi Mobile, DevSecOps Pipeline.",
-  contact:
-    "Contact: duberney.dev | GitHub: github.com/dubercode",
+/* -------------------------------------------------------------------------- */
+/* SKILLS TRANSLATIONS                                                         */
+/* -------------------------------------------------------------------------- */
+
+const skillCategoryTranslations: Record<string, string> = {
+  "Cloud Platforms": "Plataformas Cloud",
+  "Infrastructure as Code": "Infraestructura como Código",
+  "DevOps & CI/CD": "DevOps y CI/CD",
+  "Containers & GitOps": "Contenedores y GitOps",
+  "Data & Databases": "Datos y Bases de Datos",
+  Programming: "Programación",
+  "AI Engineering": "Ingeniería de IA",
+  Networking: "Redes",
+  "Security & Governance": "Seguridad y Gobierno",
+  "Tools & Systems": "Herramientas y Sistemas",
 };
 
-function TerminalWidget() {
+/* -------------------------------------------------------------------------- */
+/* TERMINAL                                                                    */
+/* -------------------------------------------------------------------------- */
+
+const terminalContent = {
+  en: {
+    welcome: "Welcome to duberney.dev interactive terminal.",
+    instruction: 'Type "help" to explore available commands.',
+    help: "Available commands: help, about, skills, projects, contact, clear",
+    about:
+      "Cloud & DevOps Engineer focused on automation, cloud infrastructure and scalable platforms.",
+    skills:
+      "Azure | AWS | GCP | Terraform | Kubernetes | Docker | CI/CD | GitOps | Python",
+    projects:
+      "Available projects: Cloud Governance AI Agent, GitOps Platform, Madi Mobile, DevSecOps Pipeline.",
+    contact: "GitHub: github.com/dubercode",
+    notFound: (command: string) =>
+      `Command not found: ${command}. Type "help".`,
+    prompt: "visitor@portfolio:~$",
+    title: "duberney@portfolio — terminal",
+    inputLabel: "Terminal command",
+  },
+  es: {
+    welcome: "Bienvenido a la terminal interactiva de duberney.dev.",
+    instruction: 'Escribe "help" para explorar los comandos disponibles.',
+    help: "Comandos: help, about, skills, projects, contact, clear",
+    about:
+      "Ingeniero Cloud & DevOps enfocado en automatización, infraestructura cloud y plataformas escalables.",
+    skills:
+      "Azure | AWS | GCP | Terraform | Kubernetes | Docker | CI/CD | GitOps | Python",
+    projects:
+      "Proyectos: Cloud Governance AI Agent, GitOps Platform, Madi Mobile y DevSecOps Pipeline.",
+    contact: "GitHub: github.com/dubercode",
+    notFound: (command: string) =>
+      `Comando no encontrado: ${command}. Escribe "help".`,
+    prompt: "visitor@portfolio:~$",
+    title: "duberney@portfolio — terminal",
+    inputLabel: "Comando de terminal",
+  },
+};
+
+function TerminalWidget({ language }: { language: Language }) {
+  const terminal = terminalContent[language];
+
   const [command, setCommand] = useState("");
   const [history, setHistory] = useState<string[]>([
-    "Welcome to duberney.dev interactive terminal.",
-    'Type "help" to explore available commands.',
+    terminal.welcome,
+    terminal.instruction,
   ]);
+
+  useEffect(() => {
+    setHistory([terminal.welcome, terminal.instruction]);
+    setCommand("");
+  }, [language, terminal.welcome, terminal.instruction]);
 
   const runCommand = (value: string) => {
     const input = value.trim().toLowerCase();
@@ -124,12 +196,19 @@ function TerminalWidget() {
       return;
     }
 
-    const output =
-      commands[input] ?? `Command not found: ${input}. Type "help".`;
+    const outputs: Record<string, string> = {
+      help: terminal.help,
+      about: terminal.about,
+      skills: terminal.skills,
+      projects: terminal.projects,
+      contact: terminal.contact,
+    };
 
-    setHistory((prev) => [
-      ...prev,
-      `visitor@portfolio:~$ ${input}`,
+    const output = outputs[input] ?? terminal.notFound(input);
+
+    setHistory((previous) => [
+      ...previous,
+      `${terminal.prompt} ${input}`,
       output,
     ]);
 
@@ -139,21 +218,26 @@ function TerminalWidget() {
   return (
     <div className="terminal">
       <div className="terminal-header">
-        <div className="terminal-dots">
+        <div className="terminal-dots" aria-hidden="true">
           <span />
           <span />
           <span />
         </div>
-        <span className="terminal-title">
-          duberney@portfolio — terminal
-        </span>
+
+        <span className="terminal-title">{terminal.title}</span>
+
         <Terminal size={15} />
       </div>
 
-      <div className="terminal-body">
+      <div
+        className="terminal-body"
+        role="log"
+        aria-live="polite"
+        aria-label={terminal.title}
+      >
         {history.map((line, index) => (
-          <div className="terminal-line" key={index}>
-            {line.startsWith("visitor@") ? (
+          <div className="terminal-line" key={`${index}-${line}`}>
+            {line.startsWith(terminal.prompt) ? (
               <span className="terminal-command">{line}</span>
             ) : (
               <span>{line}</span>
@@ -162,20 +246,20 @@ function TerminalWidget() {
         ))}
 
         <form
+          className="terminal-input-row"
           onSubmit={(event) => {
             event.preventDefault();
             runCommand(command);
           }}
-          className="terminal-input-row"
         >
-          <span className="terminal-prompt">
-            visitor@portfolio:~$
-          </span>
+          <span className="terminal-prompt">{terminal.prompt}</span>
+
           <input
             value={command}
             onChange={(event) => setCommand(event.target.value)}
             autoComplete="off"
-            aria-label="Terminal command"
+            spellCheck={false}
+            aria-label={terminal.inputLabel}
           />
         </form>
       </div>
@@ -183,121 +267,232 @@ function TerminalWidget() {
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* MAIN APPLICATION                                                            */
+/* -------------------------------------------------------------------------- */
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState("All");
 
-  const filters = [
-    "All",
-    "AI & Cloud",
-    "Platform Engineering",
-    "Application Development",
-    "Security & Automation",
+  const shouldReduceMotion = useReducedMotion();
+
+  const [language, setLanguage] = useState<Language>(() => {
+    try {
+      return localStorage.getItem("portfolio-language") === "es"
+        ? "es"
+        : "en";
+    } catch {
+      return "en";
+    }
+  });
+
+  const t = translations[language];
+
+  /* Language persistence */
+  useEffect(() => {
+    document.documentElement.lang = language;
+
+    try {
+      localStorage.setItem("portfolio-language", language);
+    } catch {
+      // The application remains functional without localStorage.
+    }
+  }, [language]);
+
+  /* Close mobile navigation with Escape */
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  /* Navigation */
+  const navItems = [
+    { label: t.navigation.about, href: "#about" },
+    { label: t.navigation.stack, href: "#stack" },
+    { label: t.navigation.projects, href: "#projects" },
+    { label: t.navigation.experience, href: "#experience" },
+    { label: t.navigation.contact, href: "#contact" },
   ];
 
+  /* Project filtering */
   const filteredProjects =
     filter === "All"
       ? projects
       : projects.filter((project) => project.category === filter);
 
-  const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Stack", href: "#stack" },
-    { label: "Projects", href: "#projects" },
-    { label: "Experience", href: "#experience" },
-    { label: "Contact", href: "#contact" },
-  ];
+  const changeLanguage = (nextLanguage: Language) => {
+    setLanguage(nextLanguage);
+    setMenuOpen(false);
+  };
+
+  const motionInitial = shouldReduceMotion
+    ? { opacity: 0 }
+    : { opacity: 0, y: 18 };
+
+  const motionVisible = { opacity: 1, y: 0 };
 
   return (
     <div className="portfolio">
-      {/* NAVIGATION */}
+      {/* ================================================================ */}
+      {/* NAVIGATION                                                       */}
+      {/* ================================================================ */}
+
       <header className="navbar">
-        <a href="#home" className="brand">
+        <a
+          href="#home"
+          className="brand"
+          onClick={() => setMenuOpen(false)}
+        >
           DUBERNEY<span>.DEV</span>
         </a>
 
-        <nav className="desktop-nav">
+        <nav className="desktop-nav" aria-label="Main navigation">
           {navItems.map((item) => (
-            <a href={item.href} key={item.label}>
+            <a key={item.href} href={item.href}>
               {item.label}
             </a>
           ))}
         </nav>
 
-        <a href="#contact" className="nav-cta">
-          Let's talk <ArrowUpRight size={15} />
-        </a>
+        <div className="navbar-actions">
+          <div
+            className="language-switch"
+            role="group"
+            aria-label="Language selector"
+          >
+            <button
+              type="button"
+              className={language === "en" ? "language-active" : ""}
+              onClick={() => changeLanguage("en")}
+              aria-pressed={language === "en"}
+            >
+              EN
+            </button>
+
+            <span aria-hidden="true">/</span>
+
+            <button
+              type="button"
+              className={language === "es" ? "language-active" : ""}
+              onClick={() => changeLanguage("es")}
+              aria-pressed={language === "es"}
+            >
+              ES
+            </button>
+          </div>
+
+          <a href="#contact" className="nav-cta">
+            {t.navigation.talk}
+            <ArrowUpRight size={15} />
+          </a>
+        </div>
 
         <button
+          type="button"
           className="mobile-menu-button"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
+          onClick={() => setMenuOpen((previous) => !previous)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
         >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
 
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {menuOpen && (
           <motion.nav
+            id="mobile-navigation"
             className="mobile-nav"
+            aria-label="Mobile navigation"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
           >
             {navItems.map((item) => (
               <a
-                key={item.label}
+                key={item.href}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
               </a>
             ))}
+
+            <div className="mobile-language-switch">
+              <button
+                type="button"
+                className={language === "en" ? "language-active" : ""}
+                onClick={() => changeLanguage("en")}
+                aria-pressed={language === "en"}
+              >
+                EN
+              </button>
+
+              <span>/</span>
+
+              <button
+                type="button"
+                className={language === "es" ? "language-active" : ""}
+                onClick={() => changeLanguage("es")}
+                aria-pressed={language === "es"}
+              >
+                ES
+              </button>
+            </div>
           </motion.nav>
         )}
       </AnimatePresence>
 
-      {/* HERO */}
+      {/* ================================================================ */}
+      {/* HERO                                                             */}
+      {/* ================================================================ */}
+
       <section id="home" className="hero section-container">
         <motion.div
           className="hero-content"
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
+          initial={motionInitial}
+          animate={motionVisible}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.6 }}
         >
           <div className="availability">
             <span className="status-dot" />
-            OPEN TO OPPORTUNITIES
+            {t.hero.availability}
           </div>
 
-          <p className="hero-eyebrow">
-            CLOUD ENGINEERING · DEVOPS · AUTOMATION
-          </p>
+          <p className="hero-eyebrow">{t.hero.eyebrow}</p>
 
           <h1>
-            Engineering
+            {t.hero.titleLine1}
             <br />
-            <span>the cloud.</span>
+            <span>{t.hero.titleLine2}</span>
             <br />
-            Automating
+            {t.hero.titleLine3}
             <br />
-            <span>the future.</span>
+            <span>{t.hero.titleLine4}</span>
           </h1>
 
-          <p className="hero-description">
-            I design, automate and build cloud infrastructure,
-            DevOps platforms and software solutions that turn
-            complex engineering challenges into scalable systems.
-          </p>
+          <p className="hero-description">{t.hero.description}</p>
 
           <div className="hero-actions">
             <a href="#projects" className="button-primary">
-              Explore my work <ArrowUpRight size={17} />
+              {t.hero.explore}
+              <ArrowUpRight size={17} />
             </a>
 
             <a href="#contact" className="button-secondary">
-              Get in touch
+              {t.hero.contact}
             </a>
           </div>
 
@@ -305,32 +500,43 @@ function App() {
             <a
               href="https://github.com/dubercode"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
-              <GitBranch size={17} /> GitHub
+              <GitBranch size={17} />
+              GitHub
             </a>
+
             <a
-              href="https://www.linkedin.com/"
+              href="https://www.linkedin.com/in/duberney-berrlo-olaya-160055139/"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
-              <UserRound size={17} /> LinkedIn
+              <UserRound size={17} />
+              LinkedIn
             </a>
           </div>
         </motion.div>
 
         <motion.div
           className="hero-visual"
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.7 }}
+          transition={{
+            duration: shouldReduceMotion ? 0 : 0.6,
+            delay: shouldReduceMotion ? 0 : 0.1,
+          }}
         >
-          <TerminalWidget />
+          <TerminalWidget language={language} />
+
           <div className="floating-card card-top">
             <Cloud size={17} />
             <div>
               <strong>Cloud Native</strong>
-              <small>Infrastructure & platforms</small>
+              <small>
+                {language === "en"
+                  ? "Infrastructure & platforms"
+                  : "Infraestructura y plataformas"}
+              </small>
             </div>
           </div>
 
@@ -338,75 +544,88 @@ function App() {
             <ShieldCheck size={17} />
             <div>
               <strong>Automation First</strong>
-              <small>Secure by design</small>
+              <small>
+                {language === "en"
+                  ? "Secure by design"
+                  : "Seguridad desde el diseño"}
+              </small>
             </div>
           </div>
         </motion.div>
       </section>
 
-      {/* METRICS / KEY AREAS */}
+      {/* ================================================================ */}
+      {/* METRICS                                                          */}
+      {/* ================================================================ */}
+
       <section className="metrics section-container">
         <div className="metric">
           <strong>Cloud</strong>
-          <span>Infrastructure & Architecture</span>
+          <span>
+            {language === "en"
+              ? "Infrastructure & Architecture"
+              : "Infraestructura y Arquitectura"}
+          </span>
         </div>
+
         <div className="metric">
           <strong>DevOps</strong>
-          <span>CI/CD & Automation</span>
+          <span>
+            {language === "en"
+              ? "CI/CD & Automation"
+              : "CI/CD y Automatización"}
+          </span>
         </div>
+
         <div className="metric">
           <strong>Platform</strong>
-          <span>Kubernetes & GitOps</span>
+          <span>
+            {language === "en"
+              ? "Kubernetes & GitOps"
+              : "Kubernetes y GitOps"}
+          </span>
         </div>
+
         <div className="metric">
           <strong>AI</strong>
-          <span>Intelligent Engineering</span>
+          <span>
+            {language === "en"
+              ? "Intelligent Engineering"
+              : "Ingeniería Inteligente"}
+          </span>
         </div>
       </section>
 
-      {/* ABOUT */}
+      {/* ================================================================ */}
+      {/* ABOUT                                                            */}
+      {/* ================================================================ */}
+
       <section id="about" className="section-container section">
         <div className="section-heading">
-          <span className="section-label">01 / ABOUT ME</span>
+          <span className="section-label">{t.about.label}</span>
+
           <h2>
-            Engineering mindset.
+            {t.about.title}
             <br />
-            <span>Continuous evolution.</span>
+            <span>{t.about.subtitle}</span>
           </h2>
         </div>
 
         <div className="about-grid">
           <div className="about-text">
-            <p className="about-lead">
-              Technology is not just about deploying systems.
-              It's about solving problems, reducing complexity
-              and creating reliable solutions.
-            </p>
-
-            <p>
-              I am a technology engineer with experience in
-              DevOps, cloud environments, infrastructure
-              automation, software delivery and technical
-              transformation.
-            </p>
-
-            <p>
-              My focus is building reproducible infrastructure,
-              secure pipelines, scalable architectures and
-              engineering workflows that improve how teams
-              develop, deploy and operate software.
-            </p>
+            <p className="about-lead">{t.about.lead}</p>
+            <p>{t.about.paragraph1}</p>
+            <p>{t.about.paragraph2}</p>
           </div>
 
           <div className="about-highlight">
             <div className="highlight-icon">
               <Code2 size={23} />
             </div>
-            <h3>Build. Automate. Improve.</h3>
-            <p>
-              Infrastructure as Code, automation, cloud
-              architecture and continuous improvement.
-            </p>
+
+            <h3>{t.about.highlightTitle}</h3>
+            <p>{t.about.highlightDescription}</p>
+
             <div className="highlight-tags">
               <span>IaC</span>
               <span>Cloud</span>
@@ -417,88 +636,91 @@ function App() {
         </div>
       </section>
 
-      {/* TECH STACK */}
+      {/* ================================================================ */}
+      {/* ENGINEERING TOOLS / TECHNOLOGY STACK                             */}
+      {/* ================================================================ */}
+
       <section id="stack" className="section stack-section">
         <div className="section-container">
           <div className="section-heading">
-            <span className="section-label">02 / TECHNOLOGY STACK</span>
-            <h2>
-              Tools of the
-              <span> trade.</span>
-            </h2>
-            <p>
-              Technologies and tools I use to design,
-              automate and deliver solutions.
-            </p>
+            <span className="section-label">{t.stack.label}</span>
+            <h2>{t.stack.title}</h2>
+            <p>{t.stack.description}</p>
           </div>
+
           <div className="skills-grid">
-  {skillGroups.map((group) => (
-    <div key={group.category} className="skill-group">
-      <h3>{group.category}</h3>
-
-      <div className="tech-tags">
-        {group.skills.map((skill) => (
-          <span key={skill}>{skill}</span>
-        ))}
-      </div>
-    </div>
-  ))}
-</div>
-
-          <div className="stack-grid">
-            {technologies.map((group, index) => {
-              const Icon = group.icon;
-
-              return (
-                <motion.div
-                  className="stack-card"
-                  key={group.category}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Icon className="stack-icon" size={22} />
-
-                  <span className="stack-category">
-                    {group.category}
+            {skillGroups.map((group, index) => (
+              <motion.article
+                key={group.category}
+                className="skill-card"
+                initial={motionInitial}
+                whileInView={motionVisible}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{
+                  duration: shouldReduceMotion ? 0 : 0.4,
+                  delay: shouldReduceMotion ? 0 : (index % 2) * 0.07,
+                }}
+              >
+                <div className="skill-card-header">
+                  <span className="skill-index">
+                    {String(index + 1).padStart(2, "0")} /{" "}
+                    {String(skillGroups.length).padStart(2, "0")}
                   </span>
 
-                  <div className="stack-items">
-                    {group.items.map((item) => (
-                      <span key={item}>{item}</span>
-                    ))}
-                  </div>
-                </motion.div>
-              );
-            })}
+                  <span className="skill-card-indicator" />
+                </div>
+
+                <h3>
+                  {language === "en"
+                    ? group.category
+                    : skillCategoryTranslations[group.category] ??
+                      group.category}
+                </h3>
+
+                <div className="skill-tags">
+                  {group.skills.map((skill) => (
+                    <span key={skill}>{skill}</span>
+                  ))}
+                </div>
+              </motion.article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* PROJECTS */}
+      {/* ================================================================ */}
+      {/* PROJECTS                                                         */}
+      {/* ================================================================ */}
+
       <section id="projects" className="section section-container">
         <div className="section-heading">
-          <span className="section-label">03 / SELECTED PROJECTS</span>
+          <span className="section-label">{t.projects.label}</span>
+
           <h2>
-            Built with purpose.
+            {t.projects.title}
             <br />
-            <span>Designed to scale.</span>
+            <span>{t.projects.subtitle}</span>
           </h2>
-          <p>
-            Hands-on engineering, experiments and solutions
-            focused on real-world challenges.
-          </p>
+
+          <p>{t.projects.description}</p>
         </div>
 
-        <div className="project-filters">
-          {filters.map((item) => (
+        <div
+          className="project-filters"
+          role="group"
+          aria-label={
+            language === "en" ? "Filter projects" : "Filtrar proyectos"
+          }
+        >
+          {projectFilters.map((item) => (
             <button
-              key={item}
-              className={filter === item ? "filter-active" : ""}
-              onClick={() => setFilter(item)}
+              type="button"
+              key={item.value}
+              className={filter === item.value ? "filter-active" : ""}
+              onClick={() => setFilter(item.value)}
+              aria-pressed={filter === item.value}
             >
-              {item}
+              {language === "en" ? item.en : item.es}
             </button>
           ))}
         </div>
@@ -510,18 +732,23 @@ function App() {
                 layout
                 key={project.number}
                 className="project-card"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
               >
                 <div className="project-top">
                   <span className="project-number">
                     PROJECT / {project.number}
                   </span>
+
                   <span className="project-status">
                     <span className="status-dot" />
-                    {project.status}
+                    {language === "en"
+                      ? project.status
+                      : project.status === "LAB"
+                        ? "LABORATORIO"
+                        : "EN DESARROLLO"}
                   </span>
                 </div>
 
@@ -531,21 +758,22 @@ function App() {
 
                 <h3>{project.name}</h3>
 
-                <p>{project.description}</p>
+                <p>{project.description[language]}</p>
 
                 <div className="project-stack">
-                  {project.stack.map((tech) => (
-                    <span key={tech}>{tech}</span>
+                  {project.stack.map((technology) => (
+                    <span key={technology}>{technology}</span>
                   ))}
                 </div>
 
                 <a
                   href="https://github.com/dubercode"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="project-link"
                 >
-                  Explore repository <ExternalLink size={15} />
+                  {t.projects.repository}
+                  <ExternalLink size={15} />
                 </a>
               </motion.article>
             ))}
@@ -553,103 +781,164 @@ function App() {
         </motion.div>
       </section>
 
-      {/* EXPERIENCE */}
-      <section id="experience" className="experience">
-  <h2>Professional Experience</h2>
+      {/* ================================================================ */}
+      {/* PROFESSIONAL EXPERIENCE                                          */}
+      {/* ================================================================ */}
 
-  <div className="experience-list">
-    {experience.map((job) => (
-      <article key={`${job.company}-${job.period}`}>
-        <h3>{job.role}</h3>
-        <h4>{job.company}</h4>
-        <p>{job.period}</p>
-        <p>{job.description}</p>
+      <section
+        id="experience"
+        className="experience-section"
+      >
+        <div className="section-container section">
+          <div className="section-heading">
+            <span className="section-label">
+              {t.experience.label}
+            </span>
 
-        {job.technologies && (
-          <div className="tech-tags">
-            {job.technologies.map((tech) => (
-              <span key={tech}>{tech}</span>
+            <h2>{t.experience.title}</h2>
+          </div>
+
+          <div className="experience-timeline">
+            {experience.map((job, index) => (
+              <motion.article
+                key={`${job.company}-${job.period}`}
+                className="experience-card"
+                initial={motionInitial}
+                whileInView={motionVisible}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{
+                  duration: shouldReduceMotion ? 0 : 0.4,
+                  delay: shouldReduceMotion ? 0 : Math.min(index * 0.04, 0.2),
+                }}
+              >
+                <div className="experience-marker" aria-hidden="true">
+                  <span />
+                </div>
+
+                <div className="experience-content">
+                  <div className="experience-meta">
+                    <span>{job.period}</span>
+
+                    <span className="experience-company">
+                      {job.company}
+                    </span>
+                  </div>
+
+                  <h3>{job.role}</h3>
+
+                  <p className="experience-description">
+                    {job.description}
+                  </p>
+
+                  {job.achievements.length > 0 && (
+                    <>
+                      <h4>{t.experience.achievements}</h4>
+
+                      <ul className="experience-achievements">
+                        {job.achievements.map((achievement, achievementIndex) => (
+                          <li key={`${index}-${achievementIndex}`}>
+                            {achievement}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+
+                  {job.technologies.length > 0 && (
+                    <div className="experience-technologies">
+                      {job.technologies.map((technology) => (
+                        <span key={technology}>
+                          {technology}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.article>
             ))}
           </div>
-        )}
-      </article>
-    ))}
-  </div>
-</section>
+        </div>
+      </section>
 
-      {/* CONTACT */}
-      <section id="contact" className="section section-container contact-section">
-        <span className="section-label">05 / LET'S CONNECT</span>
+      {/* ================================================================ */}
+      {/* CONTACT                                                          */}
+      {/* ================================================================ */}
+
+      <section
+        id="contact"
+        className="section section-container contact-section"
+      >
+        <span className="section-label">{t.contact.label}</span>
+
         <h2>
-          Let's build something
-          <span> meaningful.</span>
+          {t.contact.title}
+          <span> {t.contact.subtitle}</span>
         </h2>
-        <p>
-          Interested in cloud infrastructure, DevOps,
-          automation, platform engineering or innovative
-          technology projects? Let's talk.
-        </p>
 
-        <a
-          href="mailto:your-email@example.com"
-          className="button-primary contact-button"
-        >
-          <Mail size={17} /> Get in touch <ArrowUpRight size={17} />
-        </a>
+        <p>{t.contact.description}</p>
+
+          <a
+            href="https://wa.me/573016700780"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="button-primary contact-button"
+            aria-label="Contact me on WhatsApp"
+          >
+            <MessageCircle size={17} />
+            {t.contact.button}
+            <ArrowUpRight size={17} />
+          </a>
+
         <div className="social-links">
-  {socialLinks.map(({ label, href, icon: Icon }) => (
-    <a
-      key={label}
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="social-link"
-      aria-label={label}
-    >
-      <Icon size={18} />
-      <span>{label}</span>
-    </a>
-  ))}
-</div>
-        <div className="social-links">
-  {socialLinks.map(({ label, href, icon: Icon }) => (
-    <a
-      key={label}
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="social-link"
-      aria-label={label}
-    >
-      <Icon size={18} />
-      <span>{label}</span>
-    </a>
-  ))}
-</div>
+          {socialLinks.map(({ label, href, icon: Icon }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-link"
+              aria-label={label}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </a>
+          ))}
+        </div>
 
         <div className="contact-links">
-          <a href="https://github.com/dubercode" target="_blank" rel="noreferrer">
+          <a
+            href="https://github.com/dubercode"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub <ArrowUpRight size={14} />
           </a>
-          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">
+
+          <a
+            href="https://www.linkedin.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             LinkedIn <ArrowUpRight size={14} />
           </a>
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* ================================================================ */}
+      {/* FOOTER                                                           */}
+      {/* ================================================================ */}
+
       <footer className="footer section-container">
         <a href="#home" className="brand">
           DUBERNEY<span>.DEV</span>
         </a>
-        <span>Designed & engineered by Duberney.</span>
+
+        <span>{t.footer.description}</span>
+
         <span>© {new Date().getFullYear()}</span>
       </footer>
     </div>
-
   );
 }
-
-
 
 export default App;
