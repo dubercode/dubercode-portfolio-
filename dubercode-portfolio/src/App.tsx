@@ -124,19 +124,6 @@ function TerminalWidget() {
       return;
     }
 
-const socialLinks = [
-  {
-    label: "YouTube Channel",
-    href: "https://www.youtube.com/@dubercoder",
-    icon: Play,
-  },
-  {
-    label: "Technical Blog",
-    href: "https://dubercoder.blogspot.com/",
-    icon: BookOpen,
-  },
-];
-
     const output =
       commands[input] ?? `Command not found: ${input}. Type "help".`;
 
@@ -444,6 +431,19 @@ function App() {
               automate and deliver solutions.
             </p>
           </div>
+          <div className="skills-grid">
+  {skillGroups.map((group) => (
+    <div key={group.category} className="skill-group">
+      <h3>{group.category}</h3>
+
+      <div className="tech-tags">
+        {group.skills.map((skill) => (
+          <span key={skill}>{skill}</span>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
 
           <div className="stack-grid">
             {technologies.map((group, index) => {
@@ -554,53 +554,28 @@ function App() {
       </section>
 
       {/* EXPERIENCE */}
-      <section id="experience" className="section experience-section">
-    <div className="section-container">
-      <div className="section-heading">
-        <span className="section-label">04 / EXPERIENCE</span>
-        <h2>
-          Professional
-          <span> journey.</span>
-        </h2>
-      </div>
+      <section id="experience" className="experience">
+  <h2>Professional Experience</h2>
 
-      <div className="experience-item">
-        <div className="experience-marker">
-          <span />
-        </div>
-        <div className="experience-content">
-          <div className="experience-meta">
-            <span>2019 — 2020</span>
-            <span>Service Delivery Management</span>
-          </div>
-          <h3>Service Delivery Manager</h3>
-          <p>
-            Service operations, delivery management,
-            stakeholder coordination, technical teams
-            and continuous improvement.
-          </p>
-        </div>
-      </div>
+  <div className="experience-list">
+    {experience.map((job) => (
+      <article key={`${job.company}-${job.period}`}>
+        <h3>{job.role}</h3>
+        <h4>{job.company}</h4>
+        <p>{job.period}</p>
+        <p>{job.description}</p>
 
-      <div className="experience-item">
-        <div className="experience-marker">
-          <span />
-        </div>
-        <div className="experience-content">
-          <div className="experience-meta">
-            <span>2020 — PRESENT</span>
-            <span>Cloud · DevOps · Automation</span>
+        {job.technologies && (
+          <div className="tech-tags">
+            {job.technologies.map((tech) => (
+              <span key={tech}>{tech}</span>
+            ))}
           </div>
-          <h3>DevOps & Cloud Engineering</h3>
-          <p>
-            Cloud infrastructure, CI/CD, Infrastructure
-            as Code, Kubernetes, automation, data
-            platforms and engineering practices.
-          </p>
-        </div>
-      </div>
-    </div>
-      </section>
+        )}
+      </article>
+    ))}
+  </div>
+</section>
 
       {/* CONTACT */}
       <section id="contact" className="section section-container contact-section">
@@ -621,7 +596,21 @@ function App() {
         >
           <Mail size={17} /> Get in touch <ArrowUpRight size={17} />
         </a>
-
+        <div className="social-links">
+  {socialLinks.map(({ label, href, icon: Icon }) => (
+    <a
+      key={label}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="social-link"
+      aria-label={label}
+    >
+      <Icon size={18} />
+      <span>{label}</span>
+    </a>
+  ))}
+</div>
         <div className="social-links">
   {socialLinks.map(({ label, href, icon: Icon }) => (
     <a
@@ -660,5 +649,7 @@ function App() {
 
   );
 }
+
+
 
 export default App;
