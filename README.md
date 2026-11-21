@@ -136,7 +136,7 @@ Professional information and technical competencies are maintained in separate T
 
 I'm interested in opportunities involving DevOps, Cloud Engineering, Platform Engineering, SRE, DevSecOps and Agentic AI.
 
-- **GitHub:** https://github.com/TU_USUARIO
+- **GitHub:** https://github.com/dubercode
 - **YouTube:** https://www.youtube.com/@dubercoder
 - **Technical Blog:** https://dubercoder.blogspot.com/
 
