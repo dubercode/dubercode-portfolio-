@@ -507,7 +507,7 @@ function App() {
             </a>
 
             <a
-              href="https://www.linkedin.com/in/duberney-berrlo-olaya-160055139/"
+              href="https://www.linkedin.com/in/dubercoder/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -915,7 +915,7 @@ function App() {
           </a>
 
           <a
-            href="https://https://www.linkedin.com/in/duberney-berrlo-olaya-160055139/"
+            href="https://www.linkedin.com/in/dubercoder/"
             target="_blank"
             rel="noopener noreferrer"
           >
