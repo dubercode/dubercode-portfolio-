@@ -29,30 +29,27 @@ jobs:
         with:
           node-version: 22
 
-      - name: Debug repository structure
+      - name: Verify project files
         run: |
-          echo "Repository root:"
-          pwd
-          echo "Files:"
-          ls -la
-          echo "Searching package files:"
-          find . -maxdepth 4 \( -name package.json -o -name package-lock.json -o -name vite.config.ts \) -print
+          test -f dubercode-portfolio/package.json
+          test -f dubercode-portfolio/package-lock.json
+          echo "Project files verified"
 
       - name: Install dependencies
-        working-directory: ./dubercode-portfolio
+        working-directory: dubercode-portfolio
         run: npm ci
 
-      - name: Build application
-        working-directory: ./dubercode-portfolio
+      - name: Build Vite application
+        working-directory: dubercode-portfolio
         run: npm run build
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload build artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dubercode-portfolio/dist
+          path: dubercode-portfolio/dist
 
   deploy:
     needs: build
