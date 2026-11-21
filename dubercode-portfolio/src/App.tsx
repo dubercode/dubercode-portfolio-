@@ -1,8 +1,5 @@
 
 import { useEffect, useState } from "react";
-import {
-  MessageCircle,
-} from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Play,
@@ -18,6 +15,7 @@ import {
   Workflow,
   ShieldCheck,
   ExternalLink,
+  MessageCircle,
 } from "lucide-react";
 
 import { experience } from "./data/experience";
@@ -26,7 +24,7 @@ import { translations } from "./i18n/translations";
 import type { Language } from "./i18n/translations";
 
 /* -------------------------------------------------------------------------- */
-/* SOCIAL LINKS                                                                */
+/* SOCIAL LINKS                                                               */
 /* -------------------------------------------------------------------------- */
 
 const socialLinks = [
@@ -46,7 +44,20 @@ const socialLinks = [
 /* PROJECTS                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const projects = [
+type Project = {
+  name: string;
+  category: string;
+  description: {
+    en: string;
+    es: string;
+  };
+  stack: string[];
+  status: string;
+  number: string;
+  repository: string | null;
+};
+
+const projects: Project[] = [
   {
     name: "Cloud Governance AI Agent",
     category: "AI & Cloud",
@@ -57,6 +68,7 @@ const projects = [
     stack: ["Python", "Azure", "AI", "Terraform"],
     status: "IN DEVELOPMENT",
     number: "01",
+    repository: "https://github.com/dubercode/agent-government-dev",
   },
   {
     name: "Kubernetes GitOps Platform",
@@ -68,6 +80,7 @@ const projects = [
     stack: ["Kubernetes", "Docker", "Flux CD", "Terraform"],
     status: "LAB",
     number: "02",
+    repository: "https://github.com/dubercode/gitops-flux-fleet",
   },
   {
     name: "Madi Mobile Platform",
@@ -79,6 +92,7 @@ const projects = [
     stack: ["Flutter", "FastAPI", "PostgreSQL", "Azure"],
     status: "IN DEVELOPMENT",
     number: "03",
+    repository: "https://github.com/dubercode/api-madi-platform-dev",
   },
   {
     name: "DevSecOps Pipeline",
@@ -90,6 +104,7 @@ const projects = [
     stack: ["GitHub Actions", "SAST", "Trivy", "Docker"],
     status: "LAB",
     number: "04",
+    repository: null,
   },
 ];
 
@@ -114,7 +129,7 @@ const projectFilters = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/* SKILLS TRANSLATIONS                                                         */
+/* SKILLS TRANSLATIONS                                                        */
 /* -------------------------------------------------------------------------- */
 
 const skillCategoryTranslations: Record<string, string> = {
@@ -225,7 +240,6 @@ function TerminalWidget({ language }: { language: Language }) {
         </div>
 
         <span className="terminal-title">{terminal.title}</span>
-
         <Terminal size={15} />
       </div>
 
@@ -343,9 +357,7 @@ function App() {
 
   return (
     <div className="portfolio">
-      {/* ================================================================ */}
-      {/* NAVIGATION                                                       */}
-      {/* ================================================================ */}
+      {/* NAVIGATION */}
 
       <header className="navbar">
         <a
@@ -391,7 +403,12 @@ function App() {
             </button>
           </div>
 
-          <a href="#contact" className="nav-cta">
+          <a
+            href="https://wa.me/573016700780"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-cta"
+          >
             {t.navigation.talk}
             <ArrowUpRight size={15} />
           </a>
@@ -451,13 +468,21 @@ function App() {
                 ES
               </button>
             </div>
+
+            <a
+              href="https://wa.me/573016700780"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-cta"
+            >
+              {t.navigation.talk}
+              <ArrowUpRight size={15} />
+            </a>
           </motion.nav>
         )}
       </AnimatePresence>
 
-      {/* ================================================================ */}
-      {/* HERO                                                             */}
-      {/* ================================================================ */}
+      {/* HERO */}
 
       <section id="home" className="hero section-container">
         <motion.div
@@ -491,7 +516,12 @@ function App() {
               <ArrowUpRight size={17} />
             </a>
 
-            <a href="#contact" className="button-secondary">
+            <a
+              href="https://wa.me/573016700780"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button-secondary"
+            >
               {t.hero.contact}
             </a>
           </div>
@@ -507,7 +537,7 @@ function App() {
             </a>
 
             <a
-              href="https://www.linkedin.com/in/dubercoder/"
+              href="https://www.linkedin.com/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -554,9 +584,7 @@ function App() {
         </motion.div>
       </section>
 
-      {/* ================================================================ */}
-      {/* METRICS                                                          */}
-      {/* ================================================================ */}
+      {/* METRICS */}
 
       <section className="metrics section-container">
         <div className="metric">
@@ -596,9 +624,7 @@ function App() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* ABOUT                                                            */}
-      {/* ================================================================ */}
+      {/* ABOUT */}
 
       <section id="about" className="section-container section">
         <div className="section-heading">
@@ -636,9 +662,7 @@ function App() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* ENGINEERING TOOLS / TECHNOLOGY STACK                             */}
-      {/* ================================================================ */}
+      {/* ENGINEERING TOOLS */}
 
       <section id="stack" className="section stack-section">
         <div className="section-container">
@@ -688,9 +712,7 @@ function App() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* PROJECTS                                                         */}
-      {/* ================================================================ */}
+      {/* PROJECTS */}
 
       <section id="projects" className="section section-container">
         <div className="section-heading">
@@ -766,35 +788,36 @@ function App() {
                   ))}
                 </div>
 
-                <a
-                  href="https://github.com/dubercode"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link"
-                >
-                  {t.projects.repository}
-                  <ExternalLink size={15} />
-                </a>
+                {project.repository ? (
+                  <a
+                    href={project.repository}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="project-link"
+                    aria-label={`Explore ${project.name} repository on GitHub`}
+                  >
+                    {t.projects.repository}
+                    <ExternalLink size={15} />
+                  </a>
+                ) : (
+                  <span className="project-link project-link-disabled">
+                    {language === "en"
+                      ? "Repository coming soon"
+                      : "Repositorio próximamente"}
+                  </span>
+                )}
               </motion.article>
             ))}
           </AnimatePresence>
         </motion.div>
       </section>
 
-      {/* ================================================================ */}
-      {/* PROFESSIONAL EXPERIENCE                                          */}
-      {/* ================================================================ */}
+      {/* PROFESSIONAL EXPERIENCE */}
 
-      <section
-        id="experience"
-        className="experience-section"
-      >
+      <section id="experience" className="experience-section">
         <div className="section-container section">
           <div className="section-heading">
-            <span className="section-label">
-              {t.experience.label}
-            </span>
-
+            <span className="section-label">{t.experience.label}</span>
             <h2>{t.experience.title}</h2>
           </div>
 
@@ -818,28 +841,25 @@ function App() {
                 <div className="experience-content">
                   <div className="experience-meta">
                     <span>{job.period}</span>
-
-                    <span className="experience-company">
-                      {job.company}
-                    </span>
+                    <span className="experience-company">{job.company}</span>
                   </div>
 
                   <h3>{job.role}</h3>
 
-                  <p className="experience-description">
-                    {job.description}
-                  </p>
+                  <p className="experience-description">{job.description}</p>
 
                   {job.achievements.length > 0 && (
                     <>
                       <h4>{t.experience.achievements}</h4>
 
                       <ul className="experience-achievements">
-                        {job.achievements.map((achievement, achievementIndex) => (
-                          <li key={`${index}-${achievementIndex}`}>
-                            {achievement}
-                          </li>
-                        ))}
+                        {job.achievements.map(
+                          (achievement, achievementIndex) => (
+                            <li key={`${index}-${achievementIndex}`}>
+                              {achievement}
+                            </li>
+                          ),
+                        )}
                       </ul>
                     </>
                   )}
@@ -847,9 +867,7 @@ function App() {
                   {job.technologies.length > 0 && (
                     <div className="experience-technologies">
                       {job.technologies.map((technology) => (
-                        <span key={technology}>
-                          {technology}
-                        </span>
+                        <span key={technology}>{technology}</span>
                       ))}
                     </div>
                   )}
@@ -860,9 +878,7 @@ function App() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* CONTACT                                                          */}
-      {/* ================================================================ */}
+      {/* CONTACT */}
 
       <section
         id="contact"
@@ -877,17 +893,17 @@ function App() {
 
         <p>{t.contact.description}</p>
 
-          <a
-            href="https://wa.me/573016700780"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="button-primary contact-button"
-            aria-label="Contact me on WhatsApp"
-          >
-            <MessageCircle size={17} />
-            {t.contact.button}
-            <ArrowUpRight size={17} />
-          </a>
+        <a
+          href="https://wa.me/573016700780"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="button-primary contact-button"
+          aria-label="Contact me on WhatsApp"
+        >
+          <MessageCircle size={17} />
+          {t.contact.button}
+          <ArrowUpRight size={17} />
+        </a>
 
         <div className="social-links">
           {socialLinks.map(({ label, href, icon: Icon }) => (
@@ -915,7 +931,7 @@ function App() {
           </a>
 
           <a
-            href="https://www.linkedin.com/in/dubercoder/"
+            href="https://www.linkedin.com/"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -924,9 +940,7 @@ function App() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* FOOTER                                                           */}
-      {/* ================================================================ */}
+      {/* FOOTER */}
 
       <footer className="footer section-container">
         <a href="#home" className="brand">
