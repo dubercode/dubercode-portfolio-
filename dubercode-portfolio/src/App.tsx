@@ -915,7 +915,7 @@ function App() {
           </a>
 
           <a
-            href="https://www.linkedin.com/"
+            href="https://https://www.linkedin.com/in/duberney-berrlo-olaya-160055139/"
             target="_blank"
             rel="noopener noreferrer"
           >
