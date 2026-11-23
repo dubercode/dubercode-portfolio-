@@ -258,13 +258,132 @@ a {
 }
 
 /* =========================================================
-   TERMINAL
+   HERO VISUAL
 ========================================================= */
 
 .hero-visual {
   position: relative;
+  min-width: 0;
   padding: 25px 0;
 }
+
+/* =========================================================
+   HERO PROFILE — LARGER PROFESSIONAL PHOTO
+========================================================= */
+
+.hero-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 28px 0;
+  padding: 16px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(17, 23, 32, 0.96),
+    rgba(12, 17, 24, 0.92)
+  );
+
+  border: 1px solid rgba(119, 247, 168, 0.16);
+  border-radius: 16px;
+
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.hero-profile:hover {
+  border-color: rgba(119, 247, 168, 0.4);
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.3),
+    0 0 25px rgba(119, 247, 168, 0.035);
+}
+
+.hero-profile-image {
+  position: relative;
+  width: 170px;
+  height: 190px;
+  flex: 0 0 170px;
+  overflow: hidden;
+
+  border-radius: 12px;
+  border: 1px solid rgba(119, 247, 168, 0.35);
+
+  background: #111720;
+
+  box-shadow: 0 0 25px rgba(119, 247, 168, 0.08);
+}
+
+.hero-profile-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  /* Evita recortar la cabeza y los hombros */
+  object-fit: contain;
+  object-position: center;
+
+  transition: transform 0.4s ease;
+}
+
+.hero-profile:hover .hero-profile-image img {
+  transform: scale(1.02);
+}
+
+.hero-profile-caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+}
+
+.hero-profile-caption strong {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--text-primary);
+}
+
+.hero-profile-caption small {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.profile-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  margin-left: auto;
+  flex: 0 0 10px;
+}
+
+/* =========================================================
+   TERMINAL
+========================================================= */
 
 .terminal {
   position: relative;
@@ -1034,6 +1153,40 @@ a {
 
   .hero-visual {
     padding: 20px 5px;
+  }
+
+  /* HERO PROFILE — MOBILE */
+
+  .hero-profile {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 24px;
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .hero-profile-image {
+    width: 125px;
+    height: 145px;
+    flex-basis: 125px;
+  }
+
+  .hero-profile-caption strong {
+    font-size: 17px;
+  }
+
+  .hero-profile-caption small {
+    font-size: 10px;
+    max-width: 160px;
+  }
+
+  .profile-label {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .profile-status {
+    margin-left: auto;
   }
 
   .terminal-body {

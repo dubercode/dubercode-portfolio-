@@ -41,7 +41,7 @@ const socialLinks = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/* PROJECTS                                                                    */
+/* PROJECTS                                                                   */
 /* -------------------------------------------------------------------------- */
 
 type Project = {
@@ -146,12 +146,12 @@ const skillCategoryTranslations: Record<string, string> = {
 };
 
 /* -------------------------------------------------------------------------- */
-/* TERMINAL                                                                    */
+/* TERMINAL                                                                   */
 /* -------------------------------------------------------------------------- */
 
 const terminalContent = {
   en: {
-    welcome: "Welcome to duberney.dev interactive terminal.",
+    welcome: "Welcome to dubercoder.dev interactive terminal.",
     instruction: 'Type "help" to explore available commands.',
     help: "Available commands: help, about, skills, projects, contact, clear",
     about:
@@ -164,11 +164,11 @@ const terminalContent = {
     notFound: (command: string) =>
       `Command not found: ${command}. Type "help".`,
     prompt: "visitor@portfolio:~$",
-    title: "duberney@portfolio — terminal",
+    title: "dubercoder@portfolio — terminal",
     inputLabel: "Terminal command",
   },
   es: {
-    welcome: "Bienvenido a la terminal interactiva de duberney.dev.",
+    welcome: "Bienvenido a la terminal interactiva de dubercoder.dev.",
     instruction: 'Escribe "help" para explorar los comandos disponibles.',
     help: "Comandos: help, about, skills, projects, contact, clear",
     about:
@@ -181,7 +181,7 @@ const terminalContent = {
     notFound: (command: string) =>
       `Comando no encontrado: ${command}. Escribe "help".`,
     prompt: "visitor@portfolio:~$",
-    title: "duberney@portfolio — terminal",
+    title: "dubercoder@portfolio — terminal",
     inputLabel: "Comando de terminal",
   },
 };
@@ -282,7 +282,7 @@ function TerminalWidget({ language }: { language: Language }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* MAIN APPLICATION                                                            */
+/* MAIN APPLICATION                                                           */
 /* -------------------------------------------------------------------------- */
 
 function App() {
@@ -303,7 +303,6 @@ function App() {
 
   const t = translations[language];
 
-  /* Language persistence */
   useEffect(() => {
     document.documentElement.lang = language;
 
@@ -314,7 +313,6 @@ function App() {
     }
   }, [language]);
 
-  /* Close mobile navigation with Escape */
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -329,7 +327,6 @@ function App() {
     };
   }, []);
 
-  /* Navigation */
   const navItems = [
     { label: t.navigation.about, href: "#about" },
     { label: t.navigation.stack, href: "#stack" },
@@ -338,7 +335,6 @@ function App() {
     { label: t.navigation.contact, href: "#contact" },
   ];
 
-  /* Project filtering */
   const filteredProjects =
     filter === "All"
       ? projects
@@ -365,7 +361,7 @@ function App() {
           className="brand"
           onClick={() => setMenuOpen(false)}
         >
-          DUBERNEY<span>.DEV</span>
+          DUBER<span>CODER</span>
         </a>
 
         <nav className="desktop-nav" aria-label="Main navigation">
@@ -537,7 +533,7 @@ function App() {
             </a>
 
             <a
-              href="https://www.linkedin.com/"
+              href="https://www.linkedin.com/in/dubercoder/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -556,6 +552,34 @@ function App() {
             delay: shouldReduceMotion ? 0 : 0.1,
           }}
         >
+          {/* PROFESSIONAL PROFILE */}
+
+          <div className="hero-profile">
+            <div className="hero-profile-image">
+              <img
+                src={`${import.meta.env.BASE_URL}images/profile.webp`}
+                alt="Duberney - Cloud and DevOps Engineer"
+                fetchPriority="high"
+              />
+            </div>
+
+            <div className="hero-profile-caption">
+              <span className="profile-label">
+                {language === "en"
+                  ? "ENGINEERING PROFILE"
+                  : "PERFIL DE INGENIERÍA"}
+              </span>
+
+              <strong>Duberney</strong>
+
+              <small>Cloud · DevOps · Platform Engineering</small>
+            </div>
+
+            <div className="profile-status">
+              <span className="status-dot" />
+            </div>
+          </div>
+
           <TerminalWidget language={language} />
 
           <div className="floating-card card-top">
@@ -931,7 +955,7 @@ function App() {
           </a>
 
           <a
-            href="https://www.linkedin.com/"
+            href="https://www.linkedin.com/in/dubercoder/"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -944,7 +968,7 @@ function App() {
 
       <footer className="footer section-container">
         <a href="#home" className="brand">
-          DUBERNEY<span>.DEV</span>
+          DUBER<span>CODER</span>
         </a>
 
         <span>{t.footer.description}</span>
