@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  [Portfolio](https://TU_USUARIO.github.io/devops-portfolio/) ·
-  [GitHub](https://github.com/TU_USUARIO) ·
+  [Portfolio](https://dubercode.github.io/dubercode-portfolio-/) ·
+  [GitHub](https://github.com/dubercode) ·
   [YouTube](https://www.youtube.com/@dubercoder) ·
   [Technical Blog](https://dubercoder.blogspot.com/)
 </p>
